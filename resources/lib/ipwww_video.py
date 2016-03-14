@@ -887,7 +887,9 @@ def AddAvailableRedButtonDirectory(name, channelname):
         iconimage: only used for displaying the channel.
         channelname: determines which channel is queried.
     """
-    streams = ParseRedButtonStreams(channelname, '')
+    #BUG: Limelight 320 moved then 403 forbidden
+    #streams = ParseRedButtonStreams(channelname, providers)
+    streams = ParseRedButtonStreams(channelname, providers = [('ak', 'Akamai')])
 
     # Add each stream to the Kodi selection menu.
     for id, bitrate, codecs, resolution, url, provider_name in streams:
@@ -1157,7 +1159,8 @@ def ParseRedButtonStreams(channelname, providers):
     streams = []
 
     for provider_url, provider_name in providers:
-        url = "http://a.files.bbci.co.uk/media/live/manifesto/audio_video/webcast/hls/uk/hls_tablet/%s/%s.m3u8" % (provider_url, channelname)
+        #url = "http://a.files.bbci.co.uk/media/live/manifesto/audio_video/webcast/hls/uk/hls_tablet/%s/%s.m3u8" % (provider_url, channelname)
+        url = "http://a.files.bbci.co.uk/media/live/manifesto/audio_video/webcast/hls/uk/abr_hdtv/%s/%s.m3u8" % (provider_url, channelname)
         html = OpenURL(url)
         print html.encode("utf8")
 
