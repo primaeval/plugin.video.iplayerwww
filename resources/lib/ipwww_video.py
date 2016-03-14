@@ -826,7 +826,9 @@ def AddAvailableRedButtonItem(name, channelname):
         bitrate_selected = 0
         ADDON.setSetting('live_bitrate', str(bitrate_selected))
 
-    streams_available = ParseRedButtonStreams(channelname, providers)
+    #BUG: Limelight 320 moved then 403 forbidden
+    #streams_available = ParseRedButtonStreams(channelname, providers)
+    streams_available = ParseRedButtonStreams(channelname, providers = [('ak', 'Akamai')])
 
     # Play the prefered option
     if bitrate_selected > 0:
@@ -842,10 +844,10 @@ def AddAvailableRedButtonItem(name, channelname):
         # print match
         # print "Playing %s from %s with bitrate %s"%(name, match[0][4], match [0][1])
         if len(match) > 0: #TODO error message
-            PlayStream(name, match[0][0], '', '', '')
+            PlayStream(name, match[0][4], '', '', '')
     # Play the fastest available stream of the preferred provider
     else:
-        PlayStream(name, streams_available[0][0], '', '', '')
+        PlayStream(name, streams_available[0][4], '', '', '')
 
 
 
@@ -888,7 +890,7 @@ def AddAvailableRedButtonDirectory(name, channelname):
     streams = ParseRedButtonStreams(channelname, '')
 
     # Add each stream to the Kodi selection menu.
-    for url, bitrate, provider_name  in streams:
+    for id, bitrate, codecs, resolution, url, provider_name in streams:
         # For easier selection use colors to indicate high and low bitrate streams
         if bitrate > 2.1:
             color = 'ff008000'
@@ -1155,17 +1157,17 @@ def ParseRedButtonStreams(channelname, providers):
     streams = []
 
     for provider_url, provider_name in providers:
-        url = "http://a.files.bbci.co.uk/media/live/manifesto/audio_video/webcast/hds/uk/pc/%s/%s.f4m" % (provider_url, channelname)
+        url = "http://a.files.bbci.co.uk/media/live/manifesto/audio_video/webcast/hls/uk/hls_tablet/%s/%s.m3u8" % (provider_url, channelname)
         html = OpenURL(url)
+        print html.encode("utf8")
 
-        match = re.compile('<media href="(.+?)" bitrate="(.+?)"/>').findall(html)
+        match = re.compile('#EXT-X-STREAM-INF:PROGRAM-ID=(.+?),BANDWIDTH=(.+?),CODECS="(.*?)",RESOLUTION=(.+?)\s*(.+?.m3u8)').findall(html)
 
         streams.extend([list(stream) + [provider_name] for stream in match])
 
     # Convert bitrate to Mbps for further processing
     for i in range(len(streams)):
-        streams[i][1] = round(int(streams[i][1])/1000.0, 1)
-        streams[i][0] = re.sub('.f4m$', '.m3u8', streams[i][0])
+        streams[i][1] = round(int(streams[i][1])/1000000.0, 1)
 
     # Return list sorted by bitrate
     return sorted(streams, key=lambda x: (x[1]), reverse=True)
