@@ -183,7 +183,8 @@ elif mode == 131:
     Radio.GetEpisodes(url)
 
 elif mode == 132:
-    Radio.GetAvailableStreams(name, url, iconimage, description)
+    #Radio.GetAvailableStreams(name, url, iconimage, description)
+    Radio.GetPlayable(name, url, iconimage)
 
 elif mode == 133:
     Radio.AddAvailableLiveStreamsDirectory(name, url, iconimage)

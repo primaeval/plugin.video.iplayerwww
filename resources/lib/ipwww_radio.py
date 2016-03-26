@@ -3,13 +3,14 @@
 import sys
 import re
 from operator import itemgetter
-from ipwww_common import translation, AddMenuEntry, OpenURL, \
+from ipwww_common import translation, AddMenuEntry, OpenURL, OPEN_URL,\
                          CheckLogin, CreateBaseDirectory
 
 import xbmc
 import xbmcgui
 import xbmcplugin
 import xbmcaddon
+import urllib
 
 import random
 
@@ -228,6 +229,100 @@ def PlayStream(name, url, iconimage, description, subtitles_url):
     liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage=iconimage)
     liz.setInfo(type='Audio', infoLabels={'Title': name})
     liz.setProperty("IsPlayable", "true")
+    liz.setPath(url)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+
+
+def addDir(name,url,mode,iconimage,description,IPID=''):
+        if not name =='':
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)+"&IPID="+urllib.quote_plus(IPID)
+            ok=True
+            if not IPID == '':
+                name = name + ' - [COLOR orange](More Available)[/COLOR]'
+            liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+            liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
+            menu=[]
+            if not IPID == '':
+                menu.append(('[COLOR orange]Grab All Episodes[/COLOR]','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],IPID)))
+                liz.addContextMenuItems(items=menu, replaceItems=False)
+            if mode == 8:
+                menu.append(('[COLOR orange]Remove Search[/COLOR]','XBMC.Container.Update(%s?mode=12&name=%s)'% (sys.argv[0],name)))
+                liz.addContextMenuItems(items=menu, replaceItems=False)
+            if mode ==200 or mode ==6:
+                liz.setProperty("IsPlayable","true")
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+            else:
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+            return ok
+
+
+
+def GetPlayable(name,url,iconimage):
+
+    _NAME_=name
+    if 'plugin.video.bbciplayer' in iconimage:
+
+        vpid=url
+
+    else:    
+        html = OPEN_URL(url)
+      
+        vpid=re.compile('"vpid":"(.+?)"').findall(html)[0]
+    
+    NEW_URL = "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/apple-ipad-hls/vpid/%s/proto/http?cb=%d" % (vpid, random.randrange(10000,99999)) #NOTE magic from get_iplayer
+
+    html = OPEN_URL(NEW_URL,True)
+
+    # Parse the different streams and add them as new directory entries.
+    match = re.compile(
+        'media.+?bitrate="(.+?)".+?encoding="(.+?)".+?connection.+?href="(.+?)".+?supplier="(.+?)".+?transferFormat="(.+?)"'
+        ).findall(html)
+    for bitrate, encoding, url, supplier, transfer_format in match:
+        #retlist.append((supplier, bitrate, url, encoding))
+        addDir(url,url,200,iconimage,'')
+
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_VIDEO_TITLE)
+    return
+
+    NEW_URL= "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/stb-all-h264/vpid/%s" % vpid
+
+
+    html = OPEN_URL(NEW_URL,True)
+
+    match=re.compile('application="(.+?)".+?String="(.+?)".+?identifier="(.+?)".+?protocol="(.+?)".+?server="(.+?)".+?supplier="(.+?)"').findall(html.replace('amp;',''))
+    for app,auth , playpath ,protocol ,server,supplier in match:
+
+        port = '1935'
+        if protocol == 'rtmpt': port = 80
+        if supplier == 'limelight':
+            url="%s://%s:%s/ app=%s?%s tcurl=%s://%s:%s/%s?%s playpath=%s" % (protocol,server,port,app,auth,protocol,server,port,app,auth,playpath)
+            res=playpath.split('secure_auth/')[1]
+            
+        else:
+           url="%s://%s:%s/%s?%s playpath=%s?%s" % (protocol,server,port,app,auth,playpath,auth)
+           
+        if supplier == 'akamai':
+            res=playpath.split('secure/')[1]
+            
+        if supplier == 'level3':
+            res=playpath.split('mp4:')[1]
+            
+        resolution=res.split('kbps')[0]
+        if int(resolution) > 1400 :
+            TITLE='[COLOR green][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+        else:
+            TITLE='[COLOR red][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+        addDir(TITLE,url,200,iconimage,'')
+
+        
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_VIDEO_TITLE)
+
+
+def PLAY_STREAM(name,url,iconimage):
+
+    liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage=iconimage)
+    liz.setInfo(type='Video', infoLabels={'Title':name})
+    liz.setProperty("IsPlayable","true")
     liz.setPath(url)
     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
 
