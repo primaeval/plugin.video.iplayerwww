@@ -210,6 +210,30 @@ def CheckLogin(logged_in):
 
     return False
 
+def OPEN_URL(url,resolve=False):
+
+    import urllib2
+    if ADDON.getSetting('proxy')=='false':
+        req = urllib2.Request(url)
+    else:
+        if resolve==True:
+            import base64
+
+            try:
+                req = urllib2.Request('http://www.joeproxy.co.uk/index.php?q='+base64.b64encode(url))
+            except:
+                url=url.split('http')[1]
+                req = urllib2.Request('http://www.openproxy.co.uk/browse.php?u='+base64.b64encode(url)+'=&b=13&f=norefer')
+                req.add_header('Referer', 'http://www.openproxy.co.uk/')
+        else:
+            req = urllib2.Request(url)
+
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    #return link
+    return HTMLParser.HTMLParser().unescape(link.decode('utf-8'))
 
 def OpenURL(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:38.0) Gecko/20100101 Firefox/43.0'}

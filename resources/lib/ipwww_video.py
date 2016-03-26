@@ -9,7 +9,7 @@ import datetime
 import time
 import json
 from operator import itemgetter
-from ipwww_common import translation, AddMenuEntry, OpenURL, \
+from ipwww_common import translation, AddMenuEntry, OpenURL, OPEN_URL, \
                          CheckLogin, CreateBaseDirectory, GetCookieJar, \
                          ParseImageUrl, download_subtitles
 
@@ -17,6 +17,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import xbmcaddon
+
+import urllib
 
 ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
 
@@ -881,7 +883,9 @@ def ListFavourites(logged_in):
 
 
 def PlayStream(name, url, iconimage, description, subtitles_url):
-    html = OpenURL(url)
+    #html = OpenURL(url)
+    print "PlayStream: $=%s" % url
+    html = OPEN_URL(url,True)
     check_geo = re.search(
         '<H1>Access Denied</H1>', html)
     if check_geo or not html:
@@ -934,11 +938,15 @@ def AddAvailableStreamsDirectory(name, stream_id, iconimage, description):
 
 
 def ParseStreams(stream_id):
+    xbmc.log( "XXX")
     retlist = []
     # print "Parsing streams for PID: %s"%stream_id[0]
     # Open the page with the actual strem information and display the various available streams.
     NEW_URL = "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/iptv-all/vpid/%s" % stream_id[0]
-    html = OpenURL(NEW_URL)
+    #html = OpenURL(NEW_URL)
+    xbmc.log( "ParseStreams %s" % NEW_URL)
+    html = OPEN_URL(NEW_URL,True)
+    #xbmc.log(html)
     # Parse the different streams and add them as new directory entries.
     match = re.compile(
         'connection authExpires=".+?href="(.+?)".+?supplier="mf_(.+?)".+?transferFormat="(.+?)"'
@@ -953,8 +961,10 @@ def ParseStreams(stream_id):
                 tmp_sup = 2
             m3u8_breakdown = re.compile('(.+?)iptv.+?m3u8(.+?)$').findall(m3u8_url)
             #print m3u8_breakdown
-            # print m3u8_url
-            m3u8_html = OpenURL(m3u8_url)
+            print m3u8_url
+            #m3u8_html = OpenURL(m3u8_url)
+            m3u8_html = OPEN_URL(m3u8_url,True)
+            xbmc.log( m3u8_html)
             m3u8_match = re.compile('BANDWIDTH=(.+?),.+?RESOLUTION=(.+?)\n(.+?)\n').findall(m3u8_html)
             for bandwidth, resolution, stream in m3u8_match:
                 # print bandwidth
@@ -990,7 +1000,9 @@ def ParseStreams(stream_id):
             m3u8_breakdown = re.compile('.+?master.m3u8(.+?)$').findall(m3u8_url)
         # print m3u8_url
         # print m3u8_breakdown
-        m3u8_html = OpenURL(m3u8_url)
+        #m3u8_html = OpenURL(m3u8_url)
+        m3u8_html = OPEN_URL(m3u8_url,True)
+	xbmc.log(m3u8_html)
         # print m3u8_html
         m3u8_match = re.compile('BANDWIDTH=(.+?),RESOLUTION=(.+?),.+?\n(.+?)\n').findall(m3u8_html)
         # print m3u8_match
@@ -1022,6 +1034,118 @@ def ParseStreams(stream_id):
     return retlist, match
 
 
+def addDir(name,url,mode,iconimage,description,IPID=''):
+        if not name =='':
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)+"&IPID="+urllib.quote_plus(IPID)
+            ok=True
+            if not IPID == '':
+                name = name + ' - [COLOR orange](More Available)[/COLOR]'
+            liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+            liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description} )
+            menu=[]
+            if not IPID == '':
+                menu.append(('[COLOR orange]Grab All Episodes[/COLOR]','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],IPID)))
+                liz.addContextMenuItems(items=menu, replaceItems=False)
+            if mode == 8:
+                menu.append(('[COLOR orange]Remove Search[/COLOR]','XBMC.Container.Update(%s?mode=12&name=%s)'% (sys.argv[0],name)))
+                liz.addContextMenuItems(items=menu, replaceItems=False)
+            if mode ==200 or mode ==6:
+                liz.setProperty("IsPlayable","true")
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+            else:
+                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+            return ok
+
+
+
+def GetPlayable(name,url,iconimage):
+
+    _NAME_=name
+    if 'plugin.video.bbciplayer' in iconimage:
+
+        vpid=url
+
+    else:    
+        html = OPEN_URL(url)
+      
+        vpid=re.compile('"vpid":"(.+?)"').findall(html)[0]
+    
+
+
+    NEW_URL= "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/stb-all-h264/vpid/%s" % vpid
+
+
+    html = OPEN_URL(NEW_URL,True)
+
+    match=re.compile('application="(.+?)".+?String="(.+?)".+?identifier="(.+?)".+?protocol="(.+?)".+?server="(.+?)".+?supplier="(.+?)"').findall(html.replace('amp;',''))
+    for app,auth , playpath ,protocol ,server,supplier in match:
+
+        port = '1935'
+        if protocol == 'rtmpt': port = 80
+        if supplier == 'limelight':
+            url="%s://%s:%s/ app=%s?%s tcurl=%s://%s:%s/%s?%s playpath=%s" % (protocol,server,port,app,auth,protocol,server,port,app,auth,playpath)
+            res=playpath.split('secure_auth/')[1]
+            
+        else:
+           url="%s://%s:%s/%s?%s playpath=%s?%s" % (protocol,server,port,app,auth,playpath,auth)
+           
+        if supplier == 'akamai':
+            res=playpath.split('secure/')[1]
+            
+        if supplier == 'level3':
+            res=playpath.split('mp4:')[1]
+            
+        resolution=res.split('kbps')[0]
+        if int(resolution) > 1400 :
+            TITLE='[COLOR green][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+        else:
+            TITLE='[COLOR red][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+        addDir(TITLE,url,200,iconimage,'')
+
+    if ADDON.getSetting('hls')=='true':
+        NEW_URL= "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/apple-ipad-hls/vpid/%s" % vpid
+
+
+        html = OPEN_URL(NEW_URL,True)
+
+        match=re.compile('application="(.+?)".+?String="(.+?)".+?identifier="(.+?)".+?protocol="(.+?)".+?server="(.+?)".+?supplier="(.+?)"').findall(html.replace('amp;',''))
+        for app,auth , playpath ,protocol ,server,supplier in match:
+
+            port = '1935'
+            if protocol == 'rtmpt': port = 80
+            if supplier == 'limelight':
+                url="%s://%s:%s/ app=%s?%s tcurl=%s://%s:%s/%s?%s playpath=%s" % (protocol,server,port,app,auth,protocol,server,port,app,auth,playpath)
+                res=playpath.split('secure_auth/')[1]
+                
+            else:
+               url="%s://%s:%s/%s?%s playpath=%s?%s" % (protocol,server,port,app,auth,playpath,auth)
+               
+            if supplier == 'akamai':
+                res=playpath.split('secure/')[1]
+                
+            if supplier == 'level3':
+                res=playpath.split('mp4:')[1]
+                
+            resolution=res.split('kbps')[0]
+            if int(resolution) > 1400 :
+                TITLE='[COLOR green][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+            else:
+                TITLE='[COLOR red][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+            addDir(TITLE,url,200,iconimage,'')
+
+        hls = re.compile('bitrate="(.+?)".+?connection href="(.+?)".+?transferFormat="(.+?)"/>').findall(html)
+        for resolution, url, supplier in hls:
+            server=url.split('//')[1]
+            server=server.split('/')[0]
+            if int(resolution) > 1400 :
+                TITLE='[COLOR green][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())
+            else:
+                TITLE='[COLOR red][%s kbps][/COLOR] - [COLOR white]%s[/COLOR] - %s'%(resolution, supplier.upper(),server.upper())    
+            addDir(TITLE,url,200,iconimage,'')
+        
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_VIDEO_TITLE)
+
+
 def ParseLiveStreams(channelname, providers):
     if providers == '':    
         providers = [('ak', 'Akamai'), ('llnw', 'Limelight')]
@@ -1036,7 +1160,8 @@ def ParseLiveStreams(channelname, providers):
             device = 'abr_hdtv'
         url = 'http://a.files.bbci.co.uk/media/live/manifesto/audio_video/simulcast/hls/uk/%s/%s/%s.m3u8' \
               % (device, provider_url, channelname)
-        html = OpenURL(url)
+        #html = OpenURL(url)
+        html = OPEN_URL(url,True)
         match = re.compile('#EXT-X-STREAM-INF:PROGRAM-ID=(.+?),BANDWIDTH=(.+?),CODECS="(.*?)",RESOLUTION=(.+?)\s*(.+?.m3u8)').findall(html)
 
         # Add provider name to the stream list.

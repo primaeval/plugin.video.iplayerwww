@@ -27,4 +27,8 @@
     <setting id="radio_location" label="30232" type="enum" values="UK|International" default="0" enable="eq(-8,true)" />
     <setting id="radio_live_bitrate" label="30233" type="enum" values="48 Kbps|96 Kbps|128 Kbps|320 Kbps" default="3" enable="eq(-9,true)" />
 </category>
+<category label="Proxy">
+    <setting id="proxy" label="Enable Proxy" type="bool" default="true" />
+    <setting id="hls" label="Enable HLS" type="bool" default="true" />
+</category>
 </settings>

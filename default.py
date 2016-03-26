@@ -158,7 +158,8 @@ elif mode == 121:
     Video.GetEpisodes(url)
 
 elif mode == 122:
-    Video.GetAvailableStreams(name, url, iconimage, description)
+    #Video.GetAvailableStreams(name, url, iconimage, description)
+    Video.GetPlayable(name, url, iconimage)
 
 elif mode == 123:
     Video.AddAvailableLiveStreamsDirectory(name, url, iconimage)
