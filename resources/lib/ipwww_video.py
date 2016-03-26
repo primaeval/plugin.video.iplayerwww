@@ -883,9 +883,7 @@ def ListFavourites(logged_in):
 
 
 def PlayStream(name, url, iconimage, description, subtitles_url):
-    #html = OpenURL(url)
-    print "PlayStream: $=%s" % url
-    html = OPEN_URL(url,True)
+    html = OpenURL(url)
     check_geo = re.search(
         '<H1>Access Denied</H1>', html)
     if check_geo or not html:
@@ -938,15 +936,11 @@ def AddAvailableStreamsDirectory(name, stream_id, iconimage, description):
 
 
 def ParseStreams(stream_id):
-    xbmc.log( "XXX")
     retlist = []
     # print "Parsing streams for PID: %s"%stream_id[0]
     # Open the page with the actual strem information and display the various available streams.
     NEW_URL = "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/iptv-all/vpid/%s" % stream_id[0]
-    #html = OpenURL(NEW_URL)
-    xbmc.log( "ParseStreams %s" % NEW_URL)
-    html = OPEN_URL(NEW_URL,True)
-    #xbmc.log(html)
+    html = OpenURL(NEW_URL)
     # Parse the different streams and add them as new directory entries.
     match = re.compile(
         'connection authExpires=".+?href="(.+?)".+?supplier="mf_(.+?)".+?transferFormat="(.+?)"'
@@ -961,10 +955,7 @@ def ParseStreams(stream_id):
                 tmp_sup = 2
             m3u8_breakdown = re.compile('(.+?)iptv.+?m3u8(.+?)$').findall(m3u8_url)
             #print m3u8_breakdown
-            print m3u8_url
-            #m3u8_html = OpenURL(m3u8_url)
-            m3u8_html = OPEN_URL(m3u8_url,True)
-            xbmc.log( m3u8_html)
+            m3u8_html = OpenURL(m3u8_url)
             m3u8_match = re.compile('BANDWIDTH=(.+?),.+?RESOLUTION=(.+?)\n(.+?)\n').findall(m3u8_html)
             for bandwidth, resolution, stream in m3u8_match:
                 # print bandwidth
@@ -1000,10 +991,7 @@ def ParseStreams(stream_id):
             m3u8_breakdown = re.compile('.+?master.m3u8(.+?)$').findall(m3u8_url)
         # print m3u8_url
         # print m3u8_breakdown
-        #m3u8_html = OpenURL(m3u8_url)
-        m3u8_html = OPEN_URL(m3u8_url,True)
-	xbmc.log(m3u8_html)
-        # print m3u8_html
+        m3u8_html = OpenURL(m3u8_url)
         m3u8_match = re.compile('BANDWIDTH=(.+?),RESOLUTION=(.+?),.+?\n(.+?)\n').findall(m3u8_html)
         # print m3u8_match
         for bandwidth, resolution, stream in m3u8_match:
@@ -1055,8 +1043,6 @@ def addDir(name,url,mode,iconimage,description,IPID=''):
             else:
                 ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
             return ok
-
-
 
 def GetPlayable(name,url,iconimage):
 
@@ -1144,6 +1130,16 @@ def GetPlayable(name,url,iconimage):
             addDir(TITLE,url,200,iconimage,'')
         
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_VIDEO_TITLE)
+
+
+def PLAY_STREAM(name,url,iconimage):
+
+    liz = xbmcgui.ListItem(name, iconImage='DefaultVideo.png', thumbnailImage=iconimage)
+    liz.setInfo(type='Video', infoLabels={'Title':name})
+    liz.setProperty("IsPlayable","true")
+    liz.setPath(url)
+    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+
 
 
 def ParseLiveStreams(channelname, providers):
