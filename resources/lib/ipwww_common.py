@@ -17,7 +17,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
-ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
+ADDON = xbmcaddon.Addon(id='plugin.video.iplayerproxy')
 
 
 def GetAddonInfo():
@@ -31,7 +31,7 @@ def GetAddonInfo():
     return addon_info
 
 
-__addonid__ = "plugin.video.iplayerwww"
+__addonid__ = "plugin.video.iplayerproxy"
 __addoninfo__ = GetAddonInfo()
 DIR_USERDATA = xbmc.translatePath(__addoninfo__["profile"])
 cookie_jar = None

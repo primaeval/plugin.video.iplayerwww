@@ -14,7 +14,7 @@ import urllib
 
 import random
 
-ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
+ADDON = xbmcaddon.Addon(id='plugin.video.iplayerproxy')
 
 
 def GetPage(page_url, just_episodes=False):

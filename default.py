@@ -13,7 +13,7 @@ import xbmcplugin
 
 
 __plugin_handle__ = int(sys.argv[1])
-ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
+ADDON = xbmcaddon.Addon(id='plugin.video.iplayerproxy')
 sys.path.insert(0, os.path.join(ADDON.getAddonInfo("path"), 'resources', 'lib'))
 
 

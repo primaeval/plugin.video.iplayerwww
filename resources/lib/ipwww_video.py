@@ -20,7 +20,7 @@ import xbmcaddon
 
 import urllib
 
-ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
+ADDON = xbmcaddon.Addon(id='plugin.video.iplayerproxy')
 
 
 # ListLive creates menu entries for all live channels.
@@ -45,7 +45,7 @@ def ListLive():
     ]
     for id, img, name in channel_list:
         iconimage = xbmc.translatePath(
-            os.path.join('special://home/addons/plugin.video.iplayerwww/media', img + '.png'))
+            os.path.join('special://home/addons/plugin.video.iplayerproxy/media', img + '.png'))
         if ADDON.getSetting('streams_autoplay') == 'true':
             AddMenuEntry(name, id, 203, iconimage, '', '')
         else:
@@ -98,7 +98,7 @@ def ListChannelAtoZ():
     ]
     for id, img, name in channel_list:
         iconimage = xbmc.translatePath(
-            os.path.join('special://home/addons/plugin.video.iplayerwww/media', img + '.png'))
+            os.path.join('special://home/addons/plugin.video.iplayerproxy/media', img + '.png'))
         url = "http://www.bbc.co.uk/%s/a-z" % id
         AddMenuEntry(name, url, 128, iconimage, '', '')
 
@@ -409,7 +409,7 @@ def ListChannelHighlights():
     ]
     for id, img, name in channel_list:
         iconimage = xbmc.translatePath(
-            os.path.join('special://home/addons/plugin.video.iplayerwww/media', img + '.png'))
+            os.path.join('special://home/addons/plugin.video.iplayerproxy/media', img + '.png'))
         AddMenuEntry(name, id, 106, iconimage, '', '')
 
 
