@@ -147,6 +147,9 @@ elif mode == 116:
 elif mode == 117:
     Radio.ListFavourites(logged_in)
 
+elif mode == 118:
+    Video.RedButton()
+
 elif mode == 119:
     Common.SignOutBBCiD()
 
@@ -179,6 +182,9 @@ elif mode == 127:
 elif mode == 128:
     Video.ScrapeEpisodes(url)
 
+elif mode == 129:
+    Video.AddAvailableRedButtonDirectory(name, url)
+
 elif mode == 131:
     Radio.GetEpisodes(url)
 
@@ -203,6 +209,9 @@ elif mode == 202:
 
 elif mode == 203:
     Video.AddAvailableLiveStreamItem(name, url, iconimage)
+
+elif mode == 204:
+    Video.AddAvailableRedButtonItem(name, url)
 
 elif mode == 211:
     Radio.PlayStream(name, url, iconimage, description, subtitles_url)
