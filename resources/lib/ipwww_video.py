@@ -84,8 +84,7 @@ def ListLive():
         ('bbc_two_wales_digital', 'bbc_two', 'BBC Two Wales'),
     ]
     for id, img, name in channel_list:
-        iconimage = xbmc.translatePath(
-            os.path.join('special://home/addons/plugin.video.iplayerwww/media', img + '.png'))
+        iconimage = 'special://home/addons/plugin.video.iplayerwww/media/' + img + '.png'
         if ADDON.getSetting('streams_autoplay') == 'true':
             AddMenuEntry(name, id, 203, iconimage, '', '')
         else:
