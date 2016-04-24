@@ -1,0 +1,52 @@
+﻿<!--?xml version="1.0"?-->
+<settings>
+   
+  <!-- for detailed info about the settings see http://webgrabplus.com/node/30 -->
+   
+  <filename>c:\xmltv.xml</filename>
+  <mode></mode>
+  <postprocess run="n" grab="y">mdb</postprocess>
+  <proxy>automatic</proxy>
+  <user-agent>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0) Gecko/20100101 Firefox/29.0</user-agent>
+  <logging>on</logging>
+  <retry time-out="5">4</retry>
+  <skip>noskip</skip>
+  <timespan>1</timespan>
+  <update>f</update>
+ 
+  <!-- replace the next dummy channel entry with the channels you want -->
+  <!-- see http://webgrabplus.com/node/94 for the available sites/channels -->
+  
+<channel update="i" site="tvguide.co.uk" site_id="70" xmltv_id="BBC1">BBC One</channel>
+<channel update="i" site="tvguide.co.uk" site_id="89" xmltv_id="BBC2">BBC Two</channel>
+<channel update="i" site="tvguide.co.uk" site_id="109" xmltv_id="BBC4">BBC Four</channel>
+<channel update="i" site="tvguide.co.uk" site_id="118" xmltv_id="CBBC">CBBC</channel>
+<channel update="i" site="tvguide.co.uk" site_id="119" xmltv_id="CBeebies">CBeebies</channel>
+<channel update="i" site="tvguide.co.uk" site_id="66" xmltv_id="BBC News">BBC News</channel>
+<channel update="i" site="tvguide.co.uk" site_id="67" xmltv_id="BBC Parliament">BBC Parliament</channel>
+
+<channel update="i" site="tvguide.co.uk" site_id="636" xmltv_id="BBC Red Button 1">BBC Red Button 1</channel>
+<channel update="i" site="tvguide.co.uk" site_id="840" xmltv_id="BBC Red Button 2">BBC Red Button 2</channel>
+<channel update="i" site="tvguide.co.uk" site_id="767" xmltv_id="BBC Red Button 3">BBC Red Button 3</channel>
+<channel update="i" site="tvguide.co.uk" site_id="914" xmltv_id="BBC Red Button 4">BBC Red Button 4</channel>
+<channel update="i" site="tvguide.co.uk" site_id="915" xmltv_id="BBC Red Button 5">BBC Red Button 5</channel>
+<channel update="i" site="tvguide.co.uk" site_id="766" xmltv_id="BBC Red Button HD">BBC Red Button HD</channel>
+<channel update="i" site="tvguide.co.uk" site_id="643" xmltv_id="BBC Sport Interactive BBC1">BBC Sport Interactive BBC1</channel>
+<channel update="i" site="tvguide.co.uk" site_id="644" xmltv_id="BBC Sport Interactive BBC2">BBC Sport Interactive BBC2</channel>
+<channel update="i" site="tvguide.co.uk" site_id="651" xmltv_id="BBC Sport Interactive BBC3">BBC Sport Interactive BBC3</channel>
+
+
+<channel update="i" site="radiotimes.com" site_id="52" xmltv_id="BBC Radio 1">BBC Radio 1</channel>
+<channel update="i" site="radiotimes.com" site_id="53" xmltv_id="BBC Radio 2">BBC Radio 2</channel>
+<channel update="i" site="radiotimes.com" site_id="54" xmltv_id="BBC Radio 3">BBC Radio 3</channel>
+<channel update="i" site="radiotimes.com" site_id="55" xmltv_id="BBC Radio 4 FM">BBC Radio 4 FM</channel>
+<channel update="i" site="radiotimes.com" site_id="861" xmltv_id="BBC Radio 4 Extra">BBC Radio 4 Extra</channel>
+<channel update="i" site="radiotimes.com" site_id="56" xmltv_id="BBC Radio 4 LW">BBC Radio 4 LW</channel>
+<channel update="i" site="radiotimes.com" site_id="51" xmltv_id="BBC Radio 5 live">BBC Radio 5 live</channel>
+<channel update="i" site="radiotimes.com" site_id="501" xmltv_id="BBC Radio 5 live sports extra">BBC Radio 5 live sports extra</channel>
+<channel update="i" site="radiotimes.com" site_id="561" xmltv_id="BBC Radio 6 Music">BBC Radio 6 Music</channel>
+<channel update="i" site="radiotimes.com" site_id="2215" xmltv_id="BBC Radio 1Xtra">BBC Radio 1Xtra</channel>
+<channel update="i" site="radiotimes.com" site_id="91" xmltv_id="BBC World Service">BBC World Service</channel>
+<channel update="i" site="radiotimes.com" site_id="11508" xmltv_id="BBC Asian Network">BBC Asian Network</channel>
+
+</settings>
