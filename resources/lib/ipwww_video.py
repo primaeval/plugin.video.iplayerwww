@@ -486,16 +486,12 @@ def ScrapeMarkup(markup):
                 name = name + " - " + subtitle
 
         icon = ''
-        type = None
-        # <div class="r-image"  data-ip-type="episode"
-        # data-ip-src="https://ichef.bbci.co.uk/images/ic/336x189/p033s1dh.jpg">
-
+        type = None #TODO
         image_match = re.search(
-            r'<div class="r-image".+?data-ip-type="(.*?)".+?data-ip-src="https://ichef.bbci.co.uk/images/ic/.*?/(.*?)\.jpg"',
+            r'srcset="https://ichef.bbci.co.uk/images/ic/.*?/(.*?).jpg"',
             li, flags=(re.DOTALL | re.MULTILINE))
         if image_match:
-            type = image_match.group(1)
-            image = image_match.group(2)
+            image = image_match.group(1)
             if image:
                 icon = "https://ichef.bbci.co.uk/images/ic/832x468/" + image + ".jpg"
 
