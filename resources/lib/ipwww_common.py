@@ -243,7 +243,8 @@ def CheckLogin(logged_in):
         if attemptLogin:
             SignInBBCiD()
             if(StatusBBCiD()):
-                xbmcgui.Dialog().notification(translation(30308), translation(30309))
+                if ADDON.getSetting('bbc_id_autologin') == 'false':
+                    xbmcgui.Dialog().notification(translation(30308), translation(30309))
                 logged_in = True;
                 return True;
             else:
