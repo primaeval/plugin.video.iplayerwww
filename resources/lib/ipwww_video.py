@@ -1158,10 +1158,12 @@ def ParseStreams(stream_id):
         tmp_sup = 0
         tmp_br = 0
         if transfer_format == 'hls':
-            if supplier == 'akamai_hls_open':
+            if supplier == 'akamai_hls_open' and source in [0,1]:
                 tmp_sup = 1
-            elif supplier == 'limelight_hls_open':
+            elif supplier == 'limelight_hls_open' and source in [0,2]:
                 tmp_sup = 2
+            else:
+                continue
             m3u8_breakdown = re.compile('.+?master.m3u8(.+?)$').findall(m3u8_url)
         # print m3u8_url
         # print m3u8_breakdown
