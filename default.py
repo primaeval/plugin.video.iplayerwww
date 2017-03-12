@@ -10,7 +10,6 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
-xbmc.log(repr(sys.argv))
 
 plugin_handle = int(sys.argv[1])
 ADDON = xbmcaddon.Addon(id='plugin.video.iplayerwww')
